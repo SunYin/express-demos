@@ -1,0 +1,37 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <input id="uploadImage" type="file" onchange="loadImageFile()">
+    <script>
+        var oFile;
+        function loadImageFile() {
+            var oFReader = new FileReader();
+            var rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+            if (document.getElementById("uploadImage").files.length > 0) {
+                oFile = document.getElementById("uploadImage").files[0];
+                var form = new FormData(); // FormData 对象
+                form.append("mf", oFile); // 文件对象
+                if (!rFilter.test(oFile.type)) { alert("You must select a valid image file!"); return; }
+                var xhr = null;
+                if (window.ActiveXObject) {
+                    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                } else if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                }
+                xhr.open('post', "http://localhost:3000/file");//put为这次请求的类型
+                // xhr.setRequestHeader("Content-Type", oFile.type);
+                // oFReader.onload = function (ev) {
+                //     xhr.send(ev.target.result);
+                // }
+                //oFReader.readAsDataURL(oFile);
+                xhr.send(form);
+            }
+        }
+    </script>
+</body>
+
+</html>
