@@ -3,7 +3,7 @@ import * as bodyParser from 'body-parser';
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-let busboy = require("connect-busboy");
+import * as busboy from "connect-busboy";
 
 let app: express.Express = express();
 let router: express.Router = express.Router();
