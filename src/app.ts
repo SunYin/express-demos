@@ -13,9 +13,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(router);
 router.post('/file', async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
     req.pipe(req['busboy']);
-    req['busboy'].on('file', function (fieldname, file, filename) {
+    req['busboy'].on('file', (fieldname, file, filename) => {
         var saveTo = path.join(__dirname, 'static', path.basename(filename));
         file.pipe(fs.createWriteStream(saveTo));
+    });
+    req['busboy'].on('finish', () => {
+        console.log('Done parsing form!');
+        res.writeHead(200, { Connection: 'close', Location: '/' });
+        res.end();
     });
 })
 app.listen(3000);

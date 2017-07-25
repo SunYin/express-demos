@@ -53,6 +53,11 @@ router.post('/file', function (req, res, next) { return __awaiter(_this, void 0,
             var saveTo = path.join(__dirname, 'static', path.basename(filename));
             file.pipe(fs.createWriteStream(saveTo));
         });
+        req['busboy'].on('finish', function () {
+            console.log('Done parsing form!');
+            res.writeHead(200, { Connection: 'close', Location: '/' });
+            res.end();
+        });
         return [2 /*return*/];
     });
 }); });
