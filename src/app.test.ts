@@ -43,7 +43,7 @@ if (cluster.isMaster) {
         workers += 1;
         if (workers === os.cpus().length) {
             setTimeout(function () {
-                var totalReq = 2000;
+                var totalReq = 1000;
                 var selfReq = require('./req');
                 console.log('requesting');
                 selfReq(options, totalReq, function () {

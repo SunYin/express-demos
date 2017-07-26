@@ -74,7 +74,7 @@ if (cluster.isMaster) {
         workers_1 += 1;
         if (workers_1 === os.cpus().length) {
             setTimeout(function () {
-                var totalReq = 2000;
+                var totalReq = 1000;
                 var selfReq = require('./req');
                 console.log('requesting');
                 selfReq(options_1, totalReq, function () {
@@ -84,7 +84,7 @@ if (cluster.isMaster) {
                         console.log(workerObj_1);
                     }, 500);
                 });
-            }, 0);
+            }, 2500);
         }
     });
 }
