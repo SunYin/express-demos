@@ -43,15 +43,49 @@ var busboy = require("connect-busboy");
 var cluster = require("cluster");
 var os = require("os");
 if (cluster.isMaster) {
+    var workers_1 = 0;
+    var workerObj_1 = {};
+    var options_1 = {
+        hostname: 'localhost',
+        port: 3000,
+        path: '/test',
+        agent: false
+    };
     os.cpus().forEach(function () {
         cluster.fork();
+    });
+    Object.keys(cluster.workers).forEach(function (id) {
+        cluster.workers[id].on('message', function (pid) {
+            workerObj_1['process id:  ' + pid] += 1;
+        });
     });
     cluster.on('exit', function (worker, code, signal) {
         console.log("worker " + worker.process.pid + " died");
         cluster.fork();
     });
     cluster.on('listening', function (worker, address) {
+        workerObj_1['process id:  ' + worker.process.pid] = 0;
         console.log('worker process id: ' + worker.process.pid);
+    });
+    cluster.on('exit', function (worker, code, signal) {
+        console.log('worker: ' + worker.process.pid + ' died');
+    });
+    cluster.on('online', function (worker) {
+        workers_1 += 1;
+        if (workers_1 === os.cpus().length) {
+            setTimeout(function () {
+                var totalReq = 2000;
+                var selfReq = require('./req');
+                console.log('requesting');
+                selfReq(options_1, totalReq, function () {
+                    console.log('req end');
+                    console.log('waiting for result...');
+                    setTimeout(function () {
+                        console.log(workerObj_1);
+                    }, 500);
+                });
+            }, 0);
+        }
     });
 }
 else {
@@ -61,6 +95,10 @@ else {
     app.use(express.static('./build'));
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(router);
+    router.get('/test', function (req, res, next) {
+        process.send(process.pid);
+        res.send('test');
+    });
     router.post('/file', function (req, res, next) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             req.pipe(req['busboy']);
@@ -78,4 +116,4 @@ else {
     }); });
     app.listen(3000);
 }
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=app.test.js.map
